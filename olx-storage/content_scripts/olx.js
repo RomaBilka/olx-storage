@@ -235,8 +235,7 @@ mark_X_Y(){
 			this.grid_X(line, flag, round, font_size);
 		}
 		else if(data['grid_X']!=0)this.grid_X(10, 1, 2);
-		//******************************************************//
-		//******************************************************//
+
 		if(data['grid_Y'] && data['grid_Y']!=0){
 			let line=10, flag=1, round=2, font_size=20;
 			if(data['grid_Y']['line']) line = parseInt(data['grid_Y']['line']);
@@ -246,8 +245,6 @@ mark_X_Y(){
 			this.grid_Y(line, flag, round, font_size);
 		}
 		else if(data['grid_Y']!=0) this.grid_Y(10, 1, 2);
-		//******************************************************//
-		//******************************************************//
 
 	}
 	graph(arr, data={}){	
@@ -365,7 +362,8 @@ class productStorage{
 				products_history[products[i]['product_id']]['price_history'][Date.now()] = products[i]['price'];
 			}else{
 				products_history[products[i]['product_id']]['status'] = 1;
-				if(this.lastElement(products_history[products[i]['product_id']]['price_history']) != products[i]['price']){
+				if(lastElement(products_history[products[i]['product_id']]['price_history']) != products[i]['price']){
+					products_history[products[i]['product_id']]['price_history'][Date.now()] = lastElement(products_history[products[i]['product_id']]['price_history']);
 					products_history[products[i]['product_id']]['price_history'][Date.now()] = products[i]['price'];
 				}
 				if(products[i]['seller'])
@@ -385,13 +383,6 @@ class productStorage{
 		let products = this.getProducts();
 		delete products[product_id];
 		this.saveProducts(products);
-	}
-	lastElement(price_history){
-		let last
-		for(let k in price_history){
-			last = price_history[k];
-		}
-		return last;
 	}
 	saveProducts(products){
 		localStorage.setItem(this.storageName, JSON.stringify(products));
@@ -578,7 +569,7 @@ class parser{
 		
 	}
 	
-	//бодуєм список для товарів що зникли з обраних
+	//будуємо список для товарів що зникли з обраних
 	htmlHistoryLi(product){
 		let html_product = '';
 		html_product +='   <li class="tleft rel fleft observedad promoted" data-history="'+product.product_id+'" style="height:210px">';
@@ -888,7 +879,6 @@ if(target){
 }
 
 window.onload = starEventListener;
-//starEventListener();
 parsePage();
 
 
