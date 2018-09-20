@@ -1,3 +1,7 @@
+/**
+	* lastElement.
+	* @param  {Object} obj - Object.
+*/
 function lastElement(obj){
 		let last
 		for(let k in obj){
@@ -5,6 +9,10 @@ function lastElement(obj){
 		}
 		return last;
 	}
+/**
+	* getCookie.
+	* @param  {string} cname - cookie name.
+*/	
 function getCookie(cname) {
     var name = cname + "=";
     var decodedCookie = decodeURIComponent(document.cookie);
@@ -22,8 +30,11 @@ function getCookie(cname) {
 }
 
 
-// Draw для побудови графіків 
 class Draw{
+	/**
+		* constructor.
+		* @param  {Object} data - parameters.
+	*/
 	constructor(data={}) {
 		if("width" in data) this.width = parseInt(data['width']);
 		else this.width = 600;
@@ -58,6 +69,10 @@ class Draw{
 		if("img_type" in data) this.img_type = data['img_type'];
 		else this.img_type = 'img';
 	}
+	/**
+		* parameters.
+		* @param  {Object} data - parameters.
+	*/
 	parameters(data={}) {
 		if("width" in data) this.width = parseInt(data['width']);
 		if("height" in data) this.height = parseInt(data['height']);
@@ -76,27 +91,40 @@ class Draw{
 		if("font_size_mark" in data) this.font_size_mark = parseInt(data['font_size_mark']);
 		if("img_type" in data) this.img_type = data['img_type'];
 	}
-//метод розраховує параметри для маштабування і відображення даних на графіку
+
+/**
+	* zoomOption - the method calculates the parameters for zooming and displaying data on the graph.
+*/
 zoomOption(){
 	this.Xe = (this.width - this.border_X_left -this.border_X_right) / (this.max_X -  this.min_X);
 	this.dX = this.border_X_left - this.min_X * this.Xe;
 	this.Ye = (this.height - this.border_Y_top - this.border_Y_bottom) / (this.min_Y -  this.max_Y);
 	this.dY =  this.border_Y_top - this.max_Y * this.Ye;
 }
-//відмальовує рамку навкого графіка
+
+/**
+	* border - builds a frame around the graphics.
+*/
 border(){
 	this.ctx.lineWidth = 2;
 	this.ctx.strokeStyle = this.color_border;
 	this.ctx.rect(this.border_X_left , this.border_Y_top, (this.width - this.border_X_right-this.border_X_left) , (this.height-this.border_Y_bottom-this.border_Y_top));
 	this.ctx.stroke();
 }
+
+/**
+	* background.
+*/
 background(){
 	this.ctx.beginPath();
 	this.ctx.rect(0, 0, this.width, this.height);
 	this.ctx.fillStyle = this.background_color;
 	this.ctx.fill();
 }
-//відмальовує назву графіка
+
+/**
+	* writeTitle - draw title.
+*/
 writeTitle(){
 	this.ctx.font = this.font_size_title+'px Calibri';
 	this.ctx.fillStyle = this.color_mark ;
@@ -104,7 +132,10 @@ writeTitle(){
 	this.ctx.fillText(this.title, (this.width-w)/2, 25);
 	this.ctx.stroke();
 }
-//відмальовує підписи координат графіка
+
+/**
+	* mark_X_Y.
+*/
 mark_X_Y(){
 	this.ctx.font = this.font_size_title+'px Calibri';
 	this.ctx.fillStyle = this.color_mark ;
@@ -112,11 +143,14 @@ mark_X_Y(){
 	this.ctx.fillText(this.mark_Y, this.border_X_left, this.border_Y_top-8);
 	this.ctx.stroke();
 }
-//відмальовує сітку паралельоно осі Y, виводит значення на осі X
-//приймає параметри int $n=4, $flag=1
-//$n - кількість пунктирних ліній
-//$flag - 1 -виводить лінії і значення по Х, 0-виводить тільки лінії, -1 -виводить тільки значення
-//$r округлення значння до певного порядку
+
+/**
+	* grid_X - builds a grid parallel to the Y axis, displays the value on the X axis.
+	* @param  {number} n - the number of dotted lines.
+	* @param  {number} flag - 1-outputs lines and values in X, 0-displays only lines, -1-displays only values.
+	* @param  {number} r - rounding the values to a certain order.
+	* @param  {number} font_size.
+*/
  grid_X(n=10, flag=0, r=2, font_size=20){
 		var x, dx, value;
 		this.ctx.lineWidth = 1;
@@ -153,11 +187,14 @@ mark_X_Y(){
 		let date_str = date.getHours() + ":" +  date.getMinutes() +" "+ date.getDate()+'.'+date.getMonth()+'.'+date.getFullYear();
 		return date_str;
 	}
-//відмальовує сітку паралельоно осі X, виводит значення на осі Y
-	//приймає параметри int $n=4, $flag=1
-	//$n - кількість пунктирних ліній
-	//$flag - 1 -виводить лінії і значення по Y, 0-виводить тільки лінії, -1 -виводить тільки значення
-	//$r округлення значння до певного порядку
+
+/**
+	* grid_Y - builds a grid parallel to the X axis, displays the value on the Y axis.
+	* @param  {number} n - the number of dotted lines.
+	* @param  {number} flag - 1-outputs lines and values in Y, 0-displays only lines, -1-displays only values.
+	* @param  {number} r - rounding the values to a certain order.
+	* @param  {number} font_size.
+*/	
 	 grid_Y(n=5, flag=1, r=2,font_size=20){
 		var y, dy, value; 
 		this.ctx.lineWidth = 2;
@@ -189,7 +226,9 @@ mark_X_Y(){
 		this.ctx.stroke();
 		
 	}	
-//Метод створює канву
+/**
+	* createCanvas.
+*/
  createCanvas(idDiv, idCanvas) {
 		var div = document.getElementById(idDiv);
 		var oldCanvas = document.getElementById(idCanvas);
@@ -205,6 +244,9 @@ mark_X_Y(){
 		this.canvas = document.getElementById(idCanvas);
 		this.ctx = this.canvas.getContext('2d');
 	}
+/**
+	* createImg.
+*/	
  createImg(c,data){
 	if (this.img_type =='canvas') return true;
 	var oldimg = document.getElementById('img_'+data['div_id']);
@@ -217,6 +259,9 @@ mark_X_Y(){
 		img.setAttribute('src', c);
 		div.appendChild(img);
 }
+/**
+	* initialization.
+*/
 	initialization(data){
 		this.parameters(data);
 		this.createCanvas(data['div_id'], data['div_id']+'_canvas');
@@ -247,6 +292,9 @@ mark_X_Y(){
 		else if(data['grid_Y']!=0) this.grid_Y(10, 1, 2);
 
 	}
+/**
+	* graph.
+*/
 	graph(arr, data={}){	
 		var min_X = Infinity, max_X = -Infinity, min_Y = Infinity, max_Y = -Infinity, x, x_before, key, i,xe,ye, radius, style,  start_color, stop_color, first_x='';
 		
@@ -329,18 +377,31 @@ mark_X_Y(){
 // end class Draw
 
 
-//клас 	 що зберігає дані в локальному сховищі
+
+/**
+	* productStorage - which stores data in a local repository.
+*/
 class productStorage{
+	/**
+		* constructor.
+	*/
 	constructor() {
 		let user_id = getCookie('user_id');
 		this.user = 'user'+(user_id.length>0)? ('_' + user_id) : '';
 		this.storageName = 'products'+this.user;
 	}
+	/**
+		* getProducts - Returns the product object from the local repository.
+	*/
 	getProducts(){
 		let products = JSON.parse(localStorage.getItem(this.storageName));
 		if(products) return products;
 		return {};//вертаю пустий обєкт
 	}
+	/**
+		* addProduct.
+		* @param  {Object} product.
+	*/
 	addProduct(product){
 		let products = this.getProducts();
 		if(!products[product.product_id]){
@@ -350,6 +411,11 @@ class productStorage{
 		} 
 		this.saveProducts(products);
 	}
+	/**
+		* updateProduct.
+		* @param  {Object} products.
+		* @param  {string} page_type.
+	*/
 	updateProduct(products, page_type){
 		let products_history = this.getProducts();
 		for(let k in products_history){
@@ -363,7 +429,7 @@ class productStorage{
 			}else{
 				products_history[products[i]['product_id']]['status'] = 1;
 				if(lastElement(products_history[products[i]['product_id']]['price_history']) != products[i]['price']){
-					products_history[products[i]['product_id']]['price_history'][Date.now()] = lastElement(products_history[products[i]['product_id']]['price_history']);
+					products_history[products[i]['product_id']]['price_history'][Date.now()-1] = lastElement(products_history[products[i]['product_id']]['price_history']);
 					products_history[products[i]['product_id']]['price_history'][Date.now()] = products[i]['price'];
 				}
 				if(products[i]['seller'])
@@ -374,23 +440,40 @@ class productStorage{
 		}
 		this.saveProducts(products_history);
 	}
+	/**
+		* deleteProduct.
+		* @param  {Object} product.
+	*/
 	deleteProduct(product){
 		let products = this.getProducts();
 		delete products[product.product_id];
 		this.saveProducts(products);
 	}
+	/**
+		* deleteProductById.
+		* @param  {number} product_id.
+	*/
 	deleteProductById(product_id){
 		let products = this.getProducts();
 		delete products[product_id];
 		this.saveProducts(products);
 	}
+	/**
+		* saveProducts.
+		* @param  {Object} products.
+	*/
 	saveProducts(products){
 		localStorage.setItem(this.storageName, JSON.stringify(products));
 	}
 }
 
-//парсить і оновляє сторінки	
+/**
+	* parser - parses and updates the page.
+*/	
 class parser{
+	/**
+		* constructor.
+	*/	
 	constructor(){
 			let url = window.location.pathname;
 			this.page_type = '';
@@ -410,7 +493,9 @@ class parser{
 					};		
 						
 		}
-	//визначаєм чи галерея чи список	
+	/**
+		* listTypeList - determine whether a gallery or a list.
+	*/	
 	listTypeList(){
 		if(document.querySelectorAll('#observedViewTiles').length || document.querySelectorAll('a[data-type="galleryWide"]').length){
 			return true;
@@ -418,7 +503,10 @@ class parser{
 		return false;
 	}
 
-//парсим продукт по кліку на зірку СТАРТ	
+
+	/**
+		* buildProductObjectByClick - Parser Product Click to Star START.
+	*/	
 	buildProductObjectByClick(e){
 		//перевіряєм список чи галерея
 		if(this.listTypeList()){
@@ -437,11 +525,10 @@ class parser{
 			}
 		}
 	}
-//парсим продукт по кліку на зірку СТОП	
 
-
-
-//парсим усі товари на сторінці(для оновлення дани) СТАРТ
+	/**
+		*parsePage - Pars all goods on page (for updating data) START
+	*/	
 	parsePage(){
 		if(this.listTypeList()){
 			switch(this.page_type) {
@@ -457,6 +544,9 @@ class parser{
 		}
 	}
 
+	/**
+		* allProductGalleryFavorites.
+	*/
 	allProductGalleryFavorites(){
 		let products = [];
 		let li = document.querySelectorAll('.gallerywide.clr.normal li');
@@ -465,6 +555,9 @@ class parser{
 		}
 		return products;
 	}
+	/**
+		* allProductListFavorites.
+	*/
 	allProductListFavorites(){
 		let products = [];
 		let td = document.querySelectorAll('.offer.brtope9.pding10_0.promoted.observedad');
@@ -473,9 +566,13 @@ class parser{
 		}
 		return products;
 	}
-//парсим усі товари на сторінці(для оновлення дани) СТОП	
 
-//оновляєм сторінку даними з сховища, ціна, що зникло, дані для графіків...
+
+
+	/**
+		* pageUpdate - update the page with data from the repository, the expired price, data for the graphs ....
+		* @param  {Object} products.
+	*/
 	pageUpdate(products){ 
 		if(this.listTypeList()){
 			if(this.page_type == 'favorites') {
@@ -490,7 +587,10 @@ class parser{
 		}
 		
 	}
-	//оновляєм галерею
+	/**
+		* updateFavorites - update the gallery.
+		* @param  {Object} products.
+	*/
 	updateFavorites(products){
 		let html = document.querySelectorAll('div[id="favoritesGalleryBox"]')[0].innerHTML;
 		let html_product ='<hr><ul class="gallerywide clr normal">';
@@ -518,7 +618,10 @@ class parser{
 		document.querySelectorAll('div[id="favoritesGalleryBox"]')[0].classList.remove("hidden");	
 	}
 	
-	//оновляєм сторінку продукта
+	/**
+		* updateProduct - update product page.
+		* @param  {Object} products.
+	*/
 	updateProduct(products){
 		let product_id = parseInt(document.querySelectorAll('div[id="offerdescription"] a')[0].getAttribute('class').substr(4, 25));
 		if(!products[product_id]) return false;
@@ -540,7 +643,10 @@ class parser{
 		}
 		
 	}
-	//оновляєм список
+	/**
+		* updateListProduct - update product list.
+		* @param  {Object} products.
+	*/
 	updateListProduct(products){
 		let html = document.querySelectorAll('div[id="favoritesGalleryBox"]')[0].innerHTML;
 		let html_product ='<hr><ul class="gallerywide clr normal">';
@@ -569,18 +675,30 @@ class parser{
 		
 	}
 	
-	//будуємо список для товарів що зникли з обраних
+
+	/**
+		* updateListProduct - We build a list for the products that have disappeared from the favorites
+		* @param  {Object} product.
+	*/
 	htmlHistoryLi(product){
 		let html_product = '';
 		html_product +='   <li class="tleft rel fleft observedad promoted" data-history="'+product.product_id+'" style="height:210px">';
 		html_product +='		<div class="mheight tcenter">';
-		html_product +='			<a class="thumb tdnone scale1 rel offerLink " href="'+product.url+'">';
+
+		if(product.url.indexOf('https')!==-1)
+			html_product +='			<a class="thumb tdnone scale1 rel offerLink " href="'+product.url+'">';
+		else
+			html_product +='			<a class="thumb tdnone scale1 rel offerLink " href="https://'+product.url+'">';
 		html_product +='				 <img class="fleft" src="'+product.img+'" style="-webkit-filter: grayscale(100%); filter: grayscale(100%);">';
 		html_product +='			</a>';
 		html_product +='		</div>';
 		html_product +='       <div class="inner">';
 		html_product +='		<h4 class="normal">';
-		html_product +='			<a class="link offerLink"  href="'+product.url+'">';
+		//html_product +='			<a class="link offerLink"  href="'+(product.url.indexOf('https')!==-1)?product.url:'https://'+product.url+'">';
+		if(product.url.indexOf('https')!==-1)
+			html_product +='			<a class="link offerLink"  href="'+product.url+'">';
+		else
+			html_product +='			<a class="link offerLink"  href="https://'+product.url+'">';
 		html_product +='				<strong>'+product.title+'</strong>';
 		html_product +='			</a>';
 		html_product +='		</h4>';
@@ -606,24 +724,38 @@ class parser{
 		return html_product;
 	}
 
-//deleteProductHistory СТАРТ
+
+	/**
+		* deleteProductHistory.
+	*/
 	deleteProductHistory(e){
 		let product_id = e.path[0].getAttribute('data-history');
 		this.deleteHistoryDomElement(product_id);
 		return product_id;
 	}
+	/**
+		* deleteProductHistory.
+		* @param  {number} product_id.
+	*/
 	deleteHistoryDomElement(product_id){
 		document.querySelector('[data-history="'+product_id+'"]').remove();
 	}
-//deleteProductHistory СТОП
+
 
 		
-//парсим сторінку пошуку галерея СТАРТ
+
+	/**
+		* galleryGeneralSearch - pars search page gallery
+	*/
 	galleryGeneralSearch(e){
 		let product_id = e.path[3].getAttribute('data-id');
 		if(!product_id) return false;
 		return this.parseGalleryGeneralSearch(product_id);
 	}
+	/**
+		* parseGalleryGeneralSearch.
+		* @param  {number} product_id.
+	*/
 	parseGalleryGeneralSearch(product_id){
 		let a = document.querySelectorAll('li[data-id="'+product_id+'"] a');
 		this.product.product_id = product_id;
@@ -644,14 +776,18 @@ class parser{
 		}
 		return this.product;
 	}
-//парсим сторінку пошуку галерея СТОП
-
-//парсим сторінку пошуку список СТАРТ	
+	/**
+		* listSearch.
+	*/
 	listSearch(e){
 		let product_id = e.path[7].getAttribute('data-id');
 		if(!product_id) return false;
 		return this.parseListSearch(product_id);	
 	}
+	/**
+		* parseListSearch.
+		* @param  {number} product_id.
+	*/
 	parseListSearch(product_id){
 		this.product.product_id = product_id;
 		
@@ -671,14 +807,17 @@ class parser{
 		}
 		return this.product;
 	}
-//парсим сторінку пошуку список СТОП	
-
-//парсим сторінку фаворитів галерея СТАРТ
+	/**
+		* galleryFavorites.
+	*/
 	galleryFavorites(e){
 		let product_id = e.path[3].getAttribute('data-adid');
 		if(!product_id) return false;
 		return this.parseGalleryFavorites(product_id);
 	}
+	/**
+		* parseGalleryFavorites.
+	*/
 	parseGalleryFavorites(product_id){
 		this.product.product_id = product_id;	
 		let a = document.querySelectorAll('li[data-adid="'+product_id+'"] a');
@@ -694,14 +833,18 @@ class parser{
 		}
 		return this.product;
 	}
-//парсим сторінку фаворитів галерея СТАРТ
-		
-//парсим сторінку фаворитів список СТАРТ	
+	/**
+		* listFavorites.
+	*/	
 	listFavorites(e){
 		let product_id = e.path[8].getAttribute('data-adid');
 		if(!product_id) return false;
 		return this.parseListFavorites(product_id);
 	}
+	/**
+		* parseListFavorites.
+		* @param  {number} product_id.
+	*/
 	parseListFavorites(product_id){
 		this.product.product_id = product_id;
 		if(document.querySelectorAll('td[data-adid="'+product_id+'"] img')[0]){
@@ -719,8 +862,9 @@ class parser{
 		
 		return this.product;
 	}
-//парсим сторінку фаворитів список СТАРТ
-//парсим сторінку продукту СТАРТ
+	/**
+		* parseProduct
+	*/
 	parseProduct(){
 		let product_id = parseInt(document.querySelectorAll('div[id="offerdescription"] a')[0].getAttribute('class').substr(4, 25));
 		if(!product_id) return false;
@@ -744,10 +888,10 @@ class parser{
 		this.product.url = window.location.host + window.location.pathname;
 		return this.product;
 	}
-//парсим сторінку продукту СТОП
-
-
-//перетворюєм ціну в число
+	/**
+		* strInt.
+		* @param  {string} str.
+	*/	
 	strInt(str){
 		return parseInt(str.replace(' ', ''));
 	}
@@ -758,6 +902,11 @@ class parser{
 const pars = new parser();
 const storage = new productStorage();
 const plot = new Draw();
+/**
+	* draw.
+	* @param  {string} history_price.
+	* @param  {string} id.
+*/	
 function draw(history_price,id){
 	let price = JSON.parse(history_price);
 	price[Date.now()] = lastElement(price);
@@ -790,19 +939,28 @@ function draw(history_price,id){
 			'img_type':'img'	//як буде виводитись зображення (img - тег img, canvas - тег canvas)
 		});
 }
-//дотати товар
+/**
+	* addProduct.
+*/
 function addProduct(e){
 	storage.addProduct(pars.buildProductObjectByClick(e));
 }
+/**
+	* deleteProduct.
+*/
 function deleteProduct(e){
 	storage.deleteProduct(pars.buildProductObjectByClick(e));
 }
-//видалити товар з історії
+/**
+	* deleteProductHistory.
+*/
 function deleteProductHistory(e){
 	storage.deleteProductById(pars.deleteProductHistory(e));
 }
 
-//відмальовує графік пісдя наведеня мишки на това на сторінці обраних
+/**
+	* plotGraph - builds a chart after pointing the mouse on the product on the page selected.
+*/
 function plotGraph(e){
 	setTimeout(()=>{
 		let hover = document.querySelectorAll( ":hover" );
@@ -819,7 +977,10 @@ function plotGraph(e){
 		}
 	},500);
 }
-//видаляє графік
+
+/**
+	* deletePlotGraph.
+*/
 function deletePlotGraph(e){
 	let id = 'plot_'+e.path[0].getAttribute('data-adid');
 	let div = document.getElementById(id);
@@ -829,7 +990,9 @@ function deletePlotGraph(e){
 }
 
 
-
+/**
+	* starEventListener.
+*/
 function starEventListener(){
 	
 	var stars = document.querySelectorAll('span[data-icon="star"]');
@@ -852,6 +1015,9 @@ function starEventListener(){
 		}
 		
 }
+/**
+	* parsePage.
+*/
 function parsePage(){
 	let products = pars.parsePage();
 	if(products){
@@ -861,7 +1027,9 @@ function parsePage(){
 	
 }
 
-
+/**
+	* mutation tracking changes in DOM (change list to gallery or pagination or filters) .
+*/
 //мутація відстежуєм зміни в DOM (зміна списку на галерею чи пагінація або фільтри)
 var target = document.querySelector('#listContainer');
 if(target){
