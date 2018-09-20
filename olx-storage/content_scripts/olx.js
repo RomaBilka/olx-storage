@@ -371,8 +371,7 @@ mark_X_Y(){
 		this.createImg(img, data);
 		return	true;		
 	}
-	
-					
+				
 }		
 // end class Draw
 
@@ -427,15 +426,18 @@ class productStorage{
 				products_history[products[i]['product_id']]['price_history'] = {};
 				products_history[products[i]['product_id']]['price_history'][Date.now()] = products[i]['price'];
 			}else{
-				products_history[products[i]['product_id']]['status'] = 1;
-				if(lastElement(products_history[products[i]['product_id']]['price_history']) != products[i]['price']){
-					products_history[products[i]['product_id']]['price_history'][Date.now()-1] = lastElement(products_history[products[i]['product_id']]['price_history']);
-					products_history[products[i]['product_id']]['price_history'][Date.now()] = products[i]['price'];
-				}
-				if(products[i]['seller'])
-					products_history[products[i]['product_id']]['seller'] = products[i]['seller'];
-				if(products[i]['seller_url'])
-					products_history[products[i]['product_id']]['seller_url'] = products[i]['seller_url'];
+				if(products[i]){
+					products_history[products[i]['product_id']]['status'] = 1;
+					if(lastElement(products_history[products[i]['product_id']]['price_history']) != products[i]['price']){
+						products_history[products[i]['product_id']]['price_history'][Date.now()-1] = lastElement(products_history[products[i]['product_id']]['price_history']);
+						products_history[products[i]['product_id']]['price_history'][Date.now()] = products[i]['price'];
+					}
+					if(products[i]['seller'])
+						products_history[products[i]['product_id']]['seller'] = products[i]['seller'];
+					if(products[i]['seller_url'])
+						products_history[products[i]['product_id']]['seller_url'] = products[i]['seller_url'];
+					}
+				
 			}
 		}
 		this.saveProducts(products_history);
@@ -487,7 +489,7 @@ class parser{
 						title:'',
 						url:'',
 						price:0,
-						'status':1,
+						status:1,
 						seller:'',
 						seller_url:''
 					};		
