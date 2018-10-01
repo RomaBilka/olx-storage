@@ -1032,7 +1032,6 @@ function parsePage(){
 /**
 	* mutation tracking changes in DOM (change list to gallery or pagination or filters) .
 */
-//мутація відстежуєм зміни в DOM (зміна списку на галерею чи пагінація або фільтри)
 var target = document.querySelector('#listContainer');
 if(target){
 	var observer = new MutationObserver(function(mutations) {
