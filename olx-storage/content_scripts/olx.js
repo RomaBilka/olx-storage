@@ -184,7 +184,7 @@ mark_X_Y(){
 	}
 	timestamp_to_date(timestamp){
 		var date = new Date(parseInt(timestamp));
-		let date_str = date.getHours() + ":" +  date.getMinutes() +" "+ date.getDate()+'.'+date.getMonth()+'.'+date.getFullYear();
+		let date_str = date.getHours() + ":" +  date.getMinutes() +" "+ date.getDate()+'.'+(date.getMonth()*1+1)+'.'+date.getFullYear();
 		return date_str;
 	}
 
@@ -610,7 +610,9 @@ class parser{
 						this.product.price = document.querySelectorAll('li[data-adid="'+product_id+'"] div[class="price"]')[0].style.color='#1bc000';
 					}
 				}
-				document.querySelectorAll('li[data-adid="'+product_id+'"]')[0].setAttribute("data-history-price", JSON.stringify(product.price_history));
+				if(Object.keys(product.price_history).length > 1){
+					document.querySelectorAll('li[data-adid="'+product_id+'"]')[0].setAttribute("data-history-price", JSON.stringify(product.price_history));
+				}	
 			}else{
 				html_product += this.htmlHistoryLi(product);
 			}
@@ -640,6 +642,7 @@ class parser{
 			let style = "position: fixed; z-index:1000; width:450px; height:225px; left:10px; bottom:10px";
 			d.setAttribute('id', id);
 			d.setAttribute('style', style);
+			//d.setAttribute('onclick', "deletePlotGraphProduct('"+id+"');");
 			document.body .appendChild(d);				
 			draw(JSON.stringify(product.price_history), id);
 		}
@@ -666,7 +669,9 @@ class parser{
 						this.product.price = document.querySelectorAll('td[data-adid="'+product_id+'"]')[0].style.color='#1bc000';
 					}
 				}
-				document.querySelectorAll('td[data-adid="'+product_id+'"]')[0].setAttribute("data-history-price", JSON.stringify(product.price_history));
+				if(Object.keys(product.price_history).length > 1){
+					document.querySelectorAll('td[data-adid="'+product_id+'"]')[0].setAttribute("data-history-price", JSON.stringify(product.price_history));
+				}	
 			}else{
 				html_product += this.htmlHistoryLi(product);
 			}
@@ -736,7 +741,7 @@ class parser{
 		return product_id;
 	}
 	/**
-		* deleteProductHistory.
+		* deleteHistoryDomElement.
 		* @param  {number} product_id.
 	*/
 	deleteHistoryDomElement(product_id){
@@ -973,8 +978,11 @@ function plotGraph(e){
 				let style = "position: fixed; z-index:1000; width:450px; height:225px; left:10px; top:10px";
 				d.setAttribute('id', id);
 				d.setAttribute('style', style);
-				document.body .appendChild(d);				
-				draw(e.path[0].getAttribute('data-history-price'), id);
+				document.body .appendChild(d);	
+				if(e.path[0].getAttribute('data-history-price')){
+					draw(e.path[0].getAttribute('data-history-price'), id);
+				}				
+				
 			} 
 		}
 	},500);
@@ -990,8 +998,16 @@ function deletePlotGraph(e){
 		div.parentNode.removeChild(div);
 	}
 }
-
-
+/**
+	* deletePlotGraphProduct.
+*/
+function deletePlotGraphProduct(e){
+	let id = e.path[0].getAttribute('id');
+	let img = document.getElementById(id);
+	if(img){
+		img.parentNode.removeChild(img);
+	}
+}
 /**
 	* starEventListener.
 */
@@ -1015,6 +1031,10 @@ function starEventListener(){
 			data_history_price[i].addEventListener("mouseenter", plotGraph);
 			data_history_price[i].addEventListener("mouseleave", deletePlotGraph);
 		}
+	var data_history_price_product = document.querySelectorAll('[data_name_img]');
+		for(let i=0; i<data_history_price_product.length; i++){
+			data_history_price_product[i].addEventListener("click", deletePlotGraphProduct);
+		}	
 		
 }
 /**

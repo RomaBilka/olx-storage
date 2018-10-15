@@ -1,7 +1,7 @@
 ﻿{
     "manifest_version": 2,
     "name": "OLX storage",
-    "version": "1.0.1",
+    "version": "1.0.3",
     "description":"OLX storage - це безкоштовне розширення, що дозволяє Вам відстежувати зміни в обраних товарах.",   
     "icons": {
             "16": "images/db_16.png",
