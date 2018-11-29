@@ -428,7 +428,7 @@ class productStorage{
 			}else{
 				if(products[i]){
 					products_history[products[i]['product_id']]['status'] = 1;
-					if(lastElement(products_history[products[i]['product_id']]['price_history']) != products[i]['price']){
+					if(lastElement(products_history[products[i]['product_id']]['price_history']) != products[i]['price'] && products[i]['price']!=0){
 						products_history[products[i]['product_id']]['price_history'][Date.now()-1] = lastElement(products_history[products[i]['product_id']]['price_history']);
 						products_history[products[i]['product_id']]['price_history'][Date.now()] = products[i]['price'];
 					}
@@ -852,7 +852,7 @@ class parser{
 		* parseListFavorites.
 		* @param  {number} product_id.
 	*/
-	parseListFavorites(product_id){
+	parseListFavorites(product_id){ 
 		this.product.product_id = product_id;
 		if(document.querySelectorAll('td[data-adid="'+product_id+'"] img')[0]){
 			this.product.img = document.querySelectorAll('td[data-adid="'+product_id+'"] img')[0].getAttribute('src');
@@ -863,8 +863,10 @@ class parser{
 		if(document.querySelectorAll('td[data-adid="'+product_id+'"] a')[0]){
 			this.product.title = document.querySelectorAll('td[data-adid="'+product_id+'"] a')[0].getAttribute('title');	
 		}
-		if(document.querySelectorAll('td[data-adid="'+product_id+'"] p[class="price "]')[0]){
-			this.product.price = this.strInt(document.querySelectorAll('td[data-adid="'+product_id+'"] p[class="price "]')[0].innerHTML.replace(/([^\d]*)/, ''));
+		console.log(document.querySelectorAll('td[data-adid="'+product_id+'"] p[class="price"]')[0]);
+		if(document.querySelectorAll('td[data-adid="'+product_id+'"] p[class="price"]')[0]){
+			this.product.price = this.strInt(document.querySelectorAll('td[data-adid="'+product_id+'"] p[class="price"]')[0].innerHTML.replace(/([^\d]*)/, ''));
+			
 		}
 		
 		return this.product;
