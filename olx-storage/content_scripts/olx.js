@@ -10,6 +10,21 @@ function lastElement(obj){
 		return last;
 	}
 /**
+	* getJsonFromUrl.
+	* @param  {string} url - url.
+*/
+function getJsonFromUrl(url) {
+  if(!url) url = location.search;
+  var query = url.substr(1);
+  var result = {};
+  query.split("&").forEach(function(part) {
+    var item = part.split("=");
+    result[item[0]] = decodeURIComponent(item[1]);
+  });
+  return result;
+}	
+	
+/**
 	* getCookie.
 	* @param  {string} cname - cookie name.
 */	
@@ -386,8 +401,21 @@ class productStorage{
 	*/
 	constructor() {
 		let user_id = getCookie('user_id');
-		this.user = 'user'+(user_id.length>0)? ('_' + user_id) : '';
+		this.user = '';
+		if(user_id.length>0){
+			user += '_'+user_id;
+		}else{
+			let img = document.querySelectorAll('noscript')[0].innerHTML;
+			let parser = new DOMParser();
+			let htmlDoc = parser.parseFromString(img, 'text/html');
+			let src = htmlDoc.querySelectorAll('img')[0].getAttribute('src');
+			if(src){
+				let getParam = getJsonFromUrl(src);
+				this.user += '_' + getParam.uid;
+			}
+		}
 		this.storageName = 'products'+this.user;
+		
 	}
 	/**
 		* getProducts - Returns the product object from the local repository.
@@ -863,7 +891,7 @@ class parser{
 		if(document.querySelectorAll('td[data-adid="'+product_id+'"] a')[0]){
 			this.product.title = document.querySelectorAll('td[data-adid="'+product_id+'"] a')[0].getAttribute('title');	
 		}
-		console.log(document.querySelectorAll('td[data-adid="'+product_id+'"] p[class="price"]')[0]);
+
 		if(document.querySelectorAll('td[data-adid="'+product_id+'"] p[class="price"]')[0]){
 			this.product.price = this.strInt(document.querySelectorAll('td[data-adid="'+product_id+'"] p[class="price"]')[0].innerHTML.replace(/([^\d]*)/, ''));
 			
