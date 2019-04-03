@@ -403,7 +403,7 @@ class productStorage{
 		let user_id = getCookie('user_id');
 		this.user = '';
 		if(user_id.length>0){
-			user += '_'+user_id;
+			this.user += '_'+user_id;
 		}else{
 			let img = document.querySelectorAll('noscript')[0].innerHTML;
 			let parser = new DOMParser();
@@ -415,7 +415,6 @@ class productStorage{
 			}
 		}
 		this.storageName = 'products'+this.user;
-		
 	}
 	/**
 		* getProducts - Returns the product object from the local repository.
