@@ -13,12 +13,12 @@
  
     "content_scripts": [
         {
-            "matches": [ "https://www.olx.ua/*","https://www.olx.ua/*"],
+            "matches": [ "https://www.olx.ua/*"],
             "js": [ "content_scripts/olx.js"],
             "run_at": "document_end"
         }
     ],
-	"permissions": ["http://*/","https://*/"],
+	"permissions": ["https://www.olx.ua/*"],
     "browser_action": {
           "default_icon": {
             "16": "images/db_16.png",

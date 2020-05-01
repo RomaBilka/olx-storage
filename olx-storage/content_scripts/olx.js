@@ -662,13 +662,13 @@ class parser{
 				if(this.product.price = document.querySelectorAll('strong[class="pricelabel__value arranged"]')[0])
 					this.product.price = document.querySelectorAll('strong[class="pricelabel__value arranged"]')[0].style.color='red';
 				else if(this.product.price = document.querySelectorAll('strong[class="pricelabel__value not-arranged"]')[0])
-					this.product.price = document.querySelectorAll('strong[class="pricelabel__value arranged"]')[0].style.color='red';
+					this.product.price = document.querySelectorAll('strong[class="pricelabel__value not-arranged"]')[0].style.color='red';
 			}
 			else if(lastElement(product.price_history) < product.price){
 				if(this.product.price = document.querySelectorAll('strong[class="pricelabel__value arranged"]')[0])
 					this.product.price = document.querySelectorAll('strong[class="pricelabel__value arranged"]')[0].style.color='#1bc000';
 				else if(this.product.price = document.querySelectorAll('strong[class="pricelabel__value not-arranged"]')[0])
-					this.product.price = document.querySelectorAll('strong[class="pricelabel__value arranged"]')[0].style.color='#1bc000';
+					this.product.price = document.querySelectorAll('strong[class="pricelabel__value not-arranged"]')[0].style.color='#1bc000';
 			}
 			let id = 'plot_'+product_id;
 			let d = document.createElement('div');
