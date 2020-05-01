@@ -240,7 +240,7 @@ mark_X_Y(){
 		
 		this.ctx.stroke();
 		
-	}	
+	}
 /**
 	* createCanvas.
 */
@@ -386,7 +386,6 @@ mark_X_Y(){
 		this.createImg(img, data);
 		return	true;		
 	}
-				
 }		
 // end class Draw
 
@@ -454,17 +453,19 @@ class productStorage{
 				products_history[products[i]['product_id']]['price_history'][Date.now()] = products[i]['price'];
 			}else{
 				if(products[i]){
-					products_history[products[i]['product_id']]['status'] = 1;
-					if(lastElement(products_history[products[i]['product_id']]['price_history']) != products[i]['price'] && products[i]['price']!=0){
-						products_history[products[i]['product_id']]['price_history'][Date.now()-1] = lastElement(products_history[products[i]['product_id']]['price_history']);
-						products_history[products[i]['product_id']]['price_history'][Date.now()] = products[i]['price'];
+					let product_id = products[i]['product_id'];
+					if(products_history[product_id]){
+						products_history[product_id]['status'] = 1;
+						if(lastElement(products_history[product_id]['price_history']) != products[i]['price'] && products[i]['price']!=0){
+							products_history[product_id]['price_history'][Date.now()-1] = lastElement(products_history[products[i]['product_id']]['price_history']);
+							products_history[product_id]['price_history'][Date.now()] = products[i]['price'];
+						}
+						if(products[i]['seller'])
+							products_history[product_id]['seller'] = products[i]['seller'];
+						if(products[i]['seller_url'])
+							products_history[product_id]['seller_url'] = products[i]['seller_url'];
 					}
-					if(products[i]['seller'])
-						products_history[products[i]['product_id']]['seller'] = products[i]['seller'];
-					if(products[i]['seller_url'])
-						products_history[products[i]['product_id']]['seller_url'] = products[i]['seller_url'];
-					}
-				
+				}
 			}
 		}
 		this.saveProducts(products_history);
@@ -519,8 +520,7 @@ class parser{
 						status:1,
 						seller:'',
 						seller_url:''
-					};		
-						
+					};
 		}
 	/**
 		* listTypeList - determine whether a gallery or a list.
@@ -578,9 +578,11 @@ class parser{
 	*/
 	allProductGalleryFavorites(){
 		let products = [];
-		let li = document.querySelectorAll('.gallerywide.clr.normal li');
+		let li = document.querySelectorAll('.gallerywide.clr.normal>li');
 		for(let i=0; i<li.length; i++){
-			products[i] = Object.assign({}, this.parseGalleryFavorites(li[i].getAttribute('data-adid')));//клонуєм обєк інакше буде по силці і всюди буде останнє значення
+			if(li[i].getAttribute('data-adid')){
+				products[i] = Object.assign({}, this.parseGalleryFavorites(li[i].getAttribute('data-adid')));//клонуєм обєк інакше буде по силці і всюди буде останнє значення
+			}
 		}
 		return products;
 	}
@@ -621,7 +623,6 @@ class parser{
 		* @param  {Object} products.
 	*/
 	updateFavorites(products){
-		let html = document.querySelectorAll('div[id="favoritesGalleryBox"]')[0].innerHTML;
 		let html_product ='<hr><ul class="gallerywide clr normal">';
 		for(let k in products){
 		let product = products[k];
@@ -629,12 +630,12 @@ class parser{
 			if(product['status'] == 1){
 				if(lastElement(product.price_history) > product.price){
 					if(document.querySelectorAll('li[data-adid="'+product_id+'"] div[class="price"]')[0]){
-						this.product.price = document.querySelectorAll('li[data-adid="'+product_id+'"] div[class="price"]')[0].style.color='red';
+						document.querySelectorAll('li[data-adid="'+product_id+'"] div[class="price"]')[0].style.color='red';
 					}
 				}
 				else if(lastElement(product.price_history) < product.price){
 					if(document.querySelectorAll('li[data-adid="'+product_id+'"] div[class="price"]')[0]){
-						this.product.price = document.querySelectorAll('li[data-adid="'+product_id+'"] div[class="price"]')[0].style.color='#1bc000';
+						document.querySelectorAll('li[data-adid="'+product_id+'"] div[class="price"]')[0].style.color='#1bc000';
 					}
 				}
 				if(Object.keys(product.price_history).length > 1){
@@ -645,31 +646,36 @@ class parser{
 			}
 		}
 		html_product += '</ul>'
-		document.querySelectorAll('div[id="favoritesGalleryBox"]')[0].innerHTML = html_product + html;
-		document.querySelectorAll('div[id="favoritesGalleryBox"]')[0].classList.remove("hidden");	
+		document.querySelectorAll('section[id="body-container"]>div>div>div[class="margintop10"]')[0].insertAdjacentHTML('afterend', html_product);
 	}
-	
+
 	/**
 		* updateProduct - update product page.
 		* @param  {Object} products.
 	*/
 	updateProduct(products){
-		let product_id = parseInt(document.querySelectorAll('div[id="offerdescription"] a')[0].getAttribute('class').substr(4, 25));
+		let product_id = parseInt(document.querySelectorAll('.clm-samurai')[0].getAttribute('data-item'));
 		if(!products[product_id]) return false;
 		let product = products[product_id];
 		if(product['status'] == 1){
-			if(lastElement(product.price_history) > product.price){		
-				this.product.price = document.querySelectorAll('div[class="price-label"]')[0].style.color='red';
+			if(lastElement(product.price_history) > product.price){
+				if(this.product.price = document.querySelectorAll('strong[class="pricelabel__value arranged"]')[0])
+					this.product.price = document.querySelectorAll('strong[class="pricelabel__value arranged"]')[0].style.color='red';
+				else if(this.product.price = document.querySelectorAll('strong[class="pricelabel__value not-arranged"]')[0])
+					this.product.price = document.querySelectorAll('strong[class="pricelabel__value arranged"]')[0].style.color='red';
 			}
 			else if(lastElement(product.price_history) < product.price){
-				this.product.price = document.querySelectorAll('div[class="price-label"]')[0].style.color='#1bc000';
+				if(this.product.price = document.querySelectorAll('strong[class="pricelabel__value arranged"]')[0])
+					this.product.price = document.querySelectorAll('strong[class="pricelabel__value arranged"]')[0].style.color='#1bc000';
+				else if(this.product.price = document.querySelectorAll('strong[class="pricelabel__value not-arranged"]')[0])
+					this.product.price = document.querySelectorAll('strong[class="pricelabel__value arranged"]')[0].style.color='#1bc000';
 			}
 			let id = 'plot_'+product_id;
 			let d = document.createElement('div');
 			let style = "position: fixed; z-index:1000; width:450px; height:225px; left:10px; bottom:10px";
 			d.setAttribute('id', id);
 			d.setAttribute('style', style);
-			//d.setAttribute('onclick', "deletePlotGraphProduct('"+id+"');");
+			d.setAttribute('onclick', "deletePlotGraphProduct('"+id+"');");
 			document.body .appendChild(d);				
 			draw(JSON.stringify(product.price_history), id);
 		}
@@ -680,7 +686,6 @@ class parser{
 		* @param  {Object} products.
 	*/
 	updateListProduct(products){
-		let html = document.querySelectorAll('div[id="favoritesGalleryBox"]')[0].innerHTML;
 		let html_product ='<hr><ul class="gallerywide clr normal">';
 		for(let k in products){
 		let product = products[k];
@@ -704,11 +709,9 @@ class parser{
 			}
 		}
 		html_product += '</ul>'
-		document.querySelectorAll('div[id="favoritesGalleryBox"]')[0].innerHTML = html_product + html;
-		document.querySelectorAll('div[id="favoritesGalleryBox"]')[0].classList.remove("hidden");
-		
+		document.querySelectorAll('section[id="body-container"]>div>div>div[class="margintop10"]')[0].insertAdjacentHTML('afterend', html_product);
 	}
-	
+
 
 	/**
 		* updateListProduct - We build a list for the products that have disappeared from the favorites
@@ -716,13 +719,13 @@ class parser{
 	*/
 	htmlHistoryLi(product){
 		let html_product = '';
-		html_product +='   <li class="tleft rel fleft observedad promoted" data-history="'+product.product_id+'" style="height:210px">';
+		html_product +='   <li class="tleft rel fleft observedad promoted " data-history="'+product.product_id+'" >';
 		html_product +='		<div class="mheight tcenter">';
 
 		if(product.url.indexOf('https')!==-1)
 			html_product +='			<a class="thumb tdnone scale1 rel offerLink " href="'+product.url+'">';
 		else
-			html_product +='			<a class="thumb tdnone scale1 rel offerLink " href="https://'+product.url+'">';
+			html_product +='			<a class="thumb tdnone scale1 rel offerLink  " href="https://'+product.url+'">';
 		html_product +='				 <img class="fleft" src="'+product.img+'" style="-webkit-filter: grayscale(100%); filter: grayscale(100%);">';
 		html_product +='			</a>';
 		html_product +='		</div>';
@@ -774,9 +777,6 @@ class parser{
 	deleteHistoryDomElement(product_id){
 		document.querySelector('[data-history="'+product_id+'"]').remove();
 	}
-
-
-		
 
 	/**
 		* galleryGeneralSearch - pars search page gallery
@@ -902,21 +902,17 @@ class parser{
 		* parseProduct
 	*/
 	parseProduct(){
-		let product_id = parseInt(document.querySelectorAll('div[id="offerdescription"] a')[0].getAttribute('class').substr(4, 25));
+		let product_id = parseInt(document.querySelectorAll('.clm-samurai')[0].getAttribute('data-item'));
 		if(!product_id) return false;
 		this.product.product_id = product_id;
-		if(document.querySelectorAll('#photo-gallery-opener img')[0]){
-			this.product.img = document.querySelectorAll('#photo-gallery-opener img')[0].getAttribute('src');
+		if(document.querySelectorAll('#descImage img')[0]){
+			this.product.img = document.querySelectorAll('#descImage img')[0].getAttribute('src');
 		}
-		if(document.querySelectorAll('#photo-gallery-opener img')[0]){
-			this.product.title = document.querySelectorAll('h1')[0].innerHTML.trim();
-		}
-		if(document.querySelectorAll('strong[class="xxxx-large not-arranged"]')[0]){
-			this.product.price = this.strInt(document.querySelectorAll('strong[class="xxxx-large not-arranged"]')[0].innerHTML);
-		}else if(document.querySelectorAll('strong[class="xxxx-large arranged"]')[0]){
-			this.product.price = this.strInt(document.querySelectorAll('strong[class="xxxx-large arranged"]')[0].innerHTML);
-		}
+		this.product.title = document.querySelectorAll('h1')[0].innerHTML.trim();
 		
+		if(document.querySelectorAll('strong[class="pricelabel__value not-arranged"]')[0]){
+			this.product.price = this.strInt(document.querySelectorAll('strong[class="pricelabel__value not-arranged"]')[0].innerHTML);
+		}
 		if(document.querySelectorAll('h4 a')[0]){
 			this.product.seller = document.querySelectorAll('h4 a')[0].innerHTML.replace(/([^\a-zA-ZА-Яа-я0-9]*)/, '');	
 			this.product.seller_url = document.querySelectorAll('h4 a')[0].getAttribute('href');
@@ -1041,7 +1037,6 @@ function deletePlotGraphProduct(e){
 	* starEventListener.
 */
 function starEventListener(){
-	
 	var stars = document.querySelectorAll('span[data-icon="star"]');
 	for(let i=0; i<stars.length; i++){
 		stars[i].addEventListener("click", addProduct);
@@ -1064,7 +1059,6 @@ function starEventListener(){
 		for(let i=0; i<data_history_price_product.length; i++){
 			data_history_price_product[i].addEventListener("click", deletePlotGraphProduct);
 		}	
-		
 }
 /**
 	* parsePage.
@@ -1075,7 +1069,6 @@ function parsePage(){
 		storage.updateProduct(products, pars.page_type);
 		pars.pageUpdate(storage.getProducts());
 	}
-	
 }
 
 /**
@@ -1098,7 +1091,3 @@ if(target){
 
 window.onload = starEventListener;
 parsePage();
-
-
-
-
