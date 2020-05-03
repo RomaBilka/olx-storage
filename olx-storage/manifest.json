@@ -1,8 +1,9 @@
 ﻿{
-    "manifest_version": 2,
-    "name": "OLX storage",
-    "version": "2.0.0",
-    "description":"OLX storage - це безкоштовне розширення, що дозволяє Вам відстежувати зміни в обраних товарах.",   
+    "name": "__MSG_appName__",
+	"description": "__MSG_appDesc__",
+	"default_locale": "uk",
+	"manifest_version": 2,
+    "version": "2.0.1",
     "icons": {
             "16": "images/db_16.png",
             "32": "images/db_32.png",
