@@ -913,6 +913,9 @@ class parser{
 		if(document.querySelectorAll('strong[class="pricelabel__value not-arranged"]')[0]){
 			this.product.price = this.strInt(document.querySelectorAll('strong[class="pricelabel__value not-arranged"]')[0].innerHTML);
 		}
+		if(document.querySelectorAll('strong[class="pricelabel__value arranged"]')[0]){
+			this.product.price = this.strInt(document.querySelectorAll('strong[class="pricelabel__value arranged"]')[0].innerHTML);
+		}
 		if(document.querySelectorAll('h4 a')[0]){
 			this.product.seller = document.querySelectorAll('h4 a')[0].innerHTML.replace(/([^\a-zA-ZА-Яа-я0-9]*)/, '');	
 			this.product.seller_url = document.querySelectorAll('h4 a')[0].getAttribute('href');
