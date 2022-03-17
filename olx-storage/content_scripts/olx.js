@@ -654,21 +654,18 @@ class parser{
 		* @param  {Object} products.
 	*/
 	updateProduct(products){
-		let product_id = parseInt(document.querySelectorAll('.clm-samurai')[0].getAttribute('data-item'));
+		let product_id = this.getProductIdInProductPage();
 		if(!products[product_id]) return false;
 		let product = products[product_id];
 		if(product['status'] == 1){
 			if(lastElement(product.price_history) > product.price){
-				if(this.product.price = document.querySelectorAll('strong[class="pricelabel__value arranged"]')[0])
-					this.product.price = document.querySelectorAll('strong[class="pricelabel__value arranged"]')[0].style.color='red';
-				else if(this.product.price = document.querySelectorAll('strong[class="pricelabel__value not-arranged"]')[0])
-					this.product.price = document.querySelectorAll('strong[class="pricelabel__value not-arranged"]')[0].style.color='red';
+			if( document.querySelectorAll('div[data-testid="ad-price-container"] h3')[0]){
+					document.querySelectorAll('div[data-testid="ad-price-container"] h3')[0].style.color='red';
+			}
 			}
 			else if(lastElement(product.price_history) < product.price){
-				if(this.product.price = document.querySelectorAll('strong[class="pricelabel__value arranged"]')[0])
-					this.product.price = document.querySelectorAll('strong[class="pricelabel__value arranged"]')[0].style.color='#1bc000';
-				else if(this.product.price = document.querySelectorAll('strong[class="pricelabel__value not-arranged"]')[0])
-					this.product.price = document.querySelectorAll('strong[class="pricelabel__value not-arranged"]')[0].style.color='#1bc000';
+				if(document.querySelectorAll('div[data-testid="ad-price-container"] h3')[0])
+					document.querySelectorAll('div[data-testid="ad-price-container"] h3')[0].style.color='#1bc000';
 			}
 			let id = 'plot_'+product_id;
 			let d = document.createElement('div');
@@ -693,12 +690,12 @@ class parser{
 			if(product['status'] == 1){
 				if(lastElement(product.price_history) > product.price){
 					if(document.querySelectorAll('td[data-adid="'+product_id+'"]')[0]){
-						this.product.price = document.querySelectorAll('td[data-adid="'+product_id+'"]')[0].style.color='red';
+						document.querySelectorAll('td[data-adid="'+product_id+'"]')[0].style.color='red';
 					}
 				}
 				else if(lastElement(product.price_history) < product.price){
 					if(document.querySelectorAll('td[data-adid="'+product_id+'"]')[0]){
-						this.product.price = document.querySelectorAll('td[data-adid="'+product_id+'"]')[0].style.color='#1bc000';
+						document.querySelectorAll('td[data-adid="'+product_id+'"]')[0].style.color='#1bc000';
 					}
 				}
 				if(Object.keys(product.price_history).length > 1){
@@ -898,11 +895,18 @@ class parser{
 		
 		return this.product;
 	}
+	
+	/**
+		* getProductIdInProductPage
+	*/
+	getProductIdInProductPage(){
+		return parseInt(document.querySelectorAll('.css-cgp8kk span')[0].innerHTML.split(":")[1].replace(/([^\a-zA-ZА-Яа-я0-9]*)/, ''));
+	}
 	/**
 		* parseProduct
 	*/
 	parseProduct(){
-		let product_id = parseInt(document.querySelectorAll('.clm-samurai')[0].getAttribute('data-item'));
+		let product_id = this.getProductIdInProductPage();
 		if(!product_id) return false;
 		this.product.product_id = product_id;
 		if(document.querySelectorAll('#descImage img')[0]){
@@ -916,9 +920,9 @@ class parser{
 		if(document.querySelectorAll('strong[class="pricelabel__value arranged"]')[0]){
 			this.product.price = this.strInt(document.querySelectorAll('strong[class="pricelabel__value arranged"]')[0].innerHTML);
 		}
-		if(document.querySelectorAll('h4 a')[0]){
-			this.product.seller = document.querySelectorAll('h4 a')[0].innerHTML.replace(/([^\a-zA-ZА-Яа-я0-9]*)/, '');	
-			this.product.seller_url = document.querySelectorAll('h4 a')[0].getAttribute('href');
+		if(document.querySelectorAll('div[data-cy="seller_card"] a')[0]){
+			this.product.seller = document.querySelectorAll('div[data-cy="seller_card"] h2')[0].innerHTML.replace(/([^\a-zA-ZА-Яа-я0-9]*)/, '');			
+			this.product.seller_url = document.querySelectorAll('div[data-cy="seller_card"] a')[0].getAttribute('href');	
 		}
 		this.product.url = window.location.host + window.location.pathname;
 		return this.product;
