@@ -920,8 +920,9 @@ class parser{
 		if(document.querySelectorAll('strong[class="pricelabel__value arranged"]')[0]){
 			this.product.price = this.strInt(document.querySelectorAll('strong[class="pricelabel__value arranged"]')[0].innerHTML);
 		}
-		if(document.querySelectorAll('div[data-cy="seller_card"] a')[0]){
-			this.product.seller = document.querySelectorAll('div[data-cy="seller_card"] h2')[0].innerHTML.replace(/([^\a-zA-ZА-Яа-я0-9]*)/, '');			
+		console.dir(document.querySelectorAll('div[data-cy="seller_card"] a')[0])
+		if(document.querySelectorAll('div[data-cy="seller_card"] a')[0]){			
+			this.product.seller = "Продавець";			
 			this.product.seller_url = document.querySelectorAll('div[data-cy="seller_card"] a')[0].getAttribute('href');	
 		}
 		this.product.url = window.location.host + window.location.pathname;
