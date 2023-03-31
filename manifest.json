@@ -16,7 +16,7 @@
         {
             "matches": [ "https://www.olx.ua/*"],
             "js": [ "content_scripts/olx.js"],
-            "run_at": "document_end"
+			"run_at" : "document_end"
         }
     ],
 	"host_permissions": ["https://www.olx.ua/*"],
