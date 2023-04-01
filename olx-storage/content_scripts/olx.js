@@ -688,7 +688,9 @@ class parser {
             }
         }
         html_product += '</div>'
-        document.querySelector('div[data-cy="observed-list"] div').insertAdjacentHTML('afterend', html_product);
+        if (document.querySelector('div[data-cy="observed-list"] div')){
+            document.querySelector('div[data-cy="observed-list"] div').insertAdjacentHTML('afterend', html_product);
+        }
     }
 
     /**
