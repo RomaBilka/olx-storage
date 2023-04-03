@@ -630,21 +630,6 @@ class parser {
     }
 
     /**
-     * allProductListFavorites.
-     */
-
-    /*	allProductListFavorites(){
-            let products = [];
-            let td = document.querySelectorAll('.offer.brtope9.pding10_0.promoted.observedad');
-            for(let i=0; i<td.length; i++){
-                products[i] = Object.assign({}, this.parseListFavorites(td[i].getAttribute('data-my-id')));//клонуєм обєк інакше буде по силці і всюди буде останнє значення
-            }
-            return products;
-        }
-    */
-
-
-    /**
      * pageUpdate - update the page with data from the repository, the expired price, data for the graphs ....
      * @param  {Object} products.
      */
@@ -679,7 +664,6 @@ class parser {
                         price_element.style.color = '#1bc000';
                     }
                 }
-
                 if (Object.keys(product.price_history).length > 1) {
                     document.querySelector('[data-my-id="'+key+'"]').setAttribute("data-history-price", JSON.stringify(product.price_history));
                 }
@@ -828,42 +812,6 @@ class parser {
         return product;
     }
 
-    /**
-     * listFavorites.
-     */
-    /*listFavorites(e){
-        let product_id = e.composedPath()[8].getAttribute('data-my-id');
-        if(!product_id) return false;
-        return this.parseListFavorites(product_id);
-    }*/
-    /**
-     * parseListFavorites.
-     * @param  {number} product_id.
-     */
-
-    /*parseListFavorites(product_id){
-        this.product.product_id = product_id;
-        if(document.querySelectorAll('td[data-my-id="'+product_id+'"] img')[0]){
-            this.product.img = document.querySelectorAll('td[data-my-id="'+product_id+'"] img')[0].getAttribute('src');
-        }
-        if(document.querySelectorAll('td[data-my-id="'+product_id+'"] a')[0]){
-            this.product.url = document.querySelectorAll('td[data-my-id="'+product_id+'"] a')[0].getAttribute('href');
-        }
-        if(document.querySelectorAll('td[data-my-id="'+product_id+'"] a')[0]){
-            this.product.title = document.querySelectorAll('td[data-my-id="'+product_id+'"] a')[0].getAttribute('title');
-        }
-
-        if(document.querySelectorAll('td[data-my-id="'+product_id+'"] p[class="price"]')[0]){
-            this.product.price = this.strInt(document.querySelectorAll('td[data-my-id="'+product_id+'"] p[class="price"]')[0].innerHTML.replace(/([^\d]*)/, ''));
-
-        }
-
-        return this.product;
-    }*/
-
-    /**
-     * getProductIdInProductPage
-     */
     getProductIdInProductPage() {
         return hashCode(window.location.host + window.location.pathname );
     }
