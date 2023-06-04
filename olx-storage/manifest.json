@@ -3,7 +3,7 @@
 	"description": "__MSG_appDesc__",
 	"default_locale": "uk",
 	"manifest_version": 3,
-    "version": "2.1.0",
+    "version": "2.1.1",
     "icons": {
             "16": "images/db_16.png",
             "32": "images/db_32.png",

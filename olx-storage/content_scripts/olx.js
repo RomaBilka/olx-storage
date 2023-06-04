@@ -4,11 +4,11 @@
  * lastElement.
  * @param  {Object} obj - Object.
  */
-function lastElement(obj){
+function lastElement(obj) {
     let last = 0
-    for(let k in obj){
+    for (let k in obj) {
         const price = parseInt(obj[k]);
-        if (!isNaN(price) && price>0){
+        if (!isNaN(price) && price > 0) {
             last = price;
         }
     }
@@ -55,7 +55,7 @@ function getCookie(cname) {
 
 function hashCode(str) {
     let hash = 0;
-    if(str !== undefined){
+    if (str !== undefined) {
         for (let i = 0, len = str.length; i < len; i++) {
             let chr = str.charCodeAt(i);
             hash = (hash << 5) - hash + chr;
@@ -417,7 +417,7 @@ class Draw {
 /**
  * productStorage - which stores data in a local repository.
  */
-class productStorage {
+class ProductStorage {
     /**
      * constructor.
      */
@@ -437,18 +437,6 @@ class productStorage {
             }
         }
         this.storageName = 'products' + this.user;
-
-        //delete in the nex version
-        ////////////////////////////////////
-        const products = this.getProducts();
-        const updatedProducts = Object.values(products).reduce((newObj, product) => {
-            const id = hashCode(product.url);
-            product.product_id = id
-            newObj[id] = product;
-            return newObj;
-        }, {});
-        this.saveProducts(updatedProducts);
-        ////////////////////////////////////
     }
 
     /**
@@ -538,18 +526,12 @@ class productStorage {
     }
 }
 
-/**
- * parser - parses and updates the page.
- */
-class parser {
-    /**
-     * constructor.
-     */
+class Parser {
     constructor() {
         let url = window.location.pathname;
         this.page_type = '';
         if (url === '/uk/' || url === '/') this.page_type = 'general';
-        else if (url.search('favorites[/]$') > 0) this.page_type = 'favorites';
+        else if (url.search('favorites[/]$') > 0 || url.search('observed[/]$') > 0) this.page_type = 'favorites';
         else if (url.search('.html$') > 0) this.page_type = 'product';
         else this.page_type = 'search';
     }
@@ -574,47 +556,44 @@ class parser {
         return !!(document.querySelectorAll('#observedViewTiles').length || document.querySelectorAll('a[data-type="galleryWide"]').length);
     }
 
+    getProductIdInProductPage() {
+        return hashCode(window.location.host + window.location.pathname);
+    }
+
+    /**
+     * strInt.
+     * @param  {string} str.
+     */
+    strInt(str) {
+        return parseInt(str.replace(' ', ''));
+    }
 
     /**
      * buildProductObjectByClick - Parser Product Click to Star START.
      */
-
-    	buildProductObjectByClick(e){
-            //перевіряєм список чи галерея
-            // if(this.listTypeList()){
-            //     switch(this.page_type) {
-            //       case 'favorites':  return this.listFavorites(e); break;
-            //       case 'search':  return this.listSearch(e); break;
-            //       default: return false;
-            //     }
-            // }else{
-                switch(this.page_type) {
-                 // case 'general':  return this.galleryGeneralSearch(e); break;
-                  case 'favorites':  return this.galleryFavorites(e); break;
-               //   case 'search':  return this.galleryGeneralSearch(e); break;
-                  case 'product':  return this.parseProductOnProductPage(); break;
-                  default: return false;
-                }
-           // }
+    buildProductObjectByClick(e) {
+        switch (this.page_type) {
+            case 'favorites':
+                return this.galleryFavorites(e);
+            case 'product':
+                return this.parseProductOnProductPage();
+            default:
+                return false;
         }
+    }
 
     /**
-     *parsePage - Pars all goods on page (for updating data) START
+     *parsePage - Pars all goods on page (for updating data)
      */
     parsePage() {
-        // if(this.listTypeList()){
-        //     switch(this.page_type) {
-        //       case 'favorites':  return this.allProductListFavorites();break;
-        //       default: return false;
-        //     }
-        // }else{
-            switch(this.page_type) {
-              case 'favorites':  return this.allProductGalleryFavorites(); break;
-              case 'product':  return [this.parseProductOnProductPage()]; break;
-                default: return false;
-            }
-        // }
-
+        switch (this.page_type) {
+            case 'favorites':
+                return this.allProductGalleryFavorites();
+            case 'product':
+                return [this.parseProductOnProductPage()];
+            default:
+                return false;
+        }
     }
 
     /**
@@ -634,21 +613,20 @@ class parser {
      * @param  {Object} products.
      */
     pageUpdate(products) {
-        // if(this.listTypeList()){
-        //     if(this.page_type == 'favorites') {
-        //       this.updateListProduct(products);
-        //     }
-        // }else{
-            switch(this.page_type) {
-              case 'favorites': this.updateFavoriteProducts(products);break;
-              case 'product':   this.updateProductPage(products);break;
-              default: return false;
-            }
-       // }
+        switch (this.page_type) {
+            case 'favorites':
+                this.updateFavoriteProducts(products);
+                break;
+            case 'product':
+                this.updateProductPage(products);
+                break;
+            default:
+                return false;
+        }
     }
 
     /**
-     * updateFavorites - update the gallery.
+     * updateGalleryFavoriteProducts - update the gallery.
      * @param  {Object} products.
      */
     updateFavoriteProducts(products) {
@@ -660,66 +638,61 @@ class parser {
                 if (price_element) {
                     if (lastElement(product.price_history) > product.price) {
                         price_element.style.color = 'red';
-                    }else if (lastElement(product.price_history) < product.price) {
+                    } else if (lastElement(product.price_history) < product.price) {
                         price_element.style.color = '#1bc000';
                     }
                 }
                 if (Object.keys(product.price_history).length > 1) {
-                    document.querySelector('[data-my-id="'+key+'"]').setAttribute("data-history-price", JSON.stringify(product.price_history));
+                    document.querySelector('[data-my-id="' + key + '"]').setAttribute("data-history-price", JSON.stringify(product.price_history));
                 }
             } else {
-                html_product += this.htmlProductHistoryList(product);
+                html_product += this.htmlProductHistory(product);
             }
         }
         html_product += '</div>'
-        if (document.querySelector('div[data-cy="observed-list"] div')){
+        if (document.querySelector('div[data-cy="observed-list"] div')) {
             document.querySelector('div[data-cy="observed-list"] div').insertAdjacentHTML('afterend', html_product);
         }
     }
 
     /**
-     * updateProduct - update product page.
+     * updateProductPage - update product page.
      * @param  {Object} products.
      */
-    updateProductPage(products){
+    updateProductPage(products) {
         const product_id = this.getProductIdInProductPage();
-
-        if(!products[product_id]) return false;
+        if (!products[product_id]) return false;
 
         const product = products[product_id];
-        if(product['status'] === 1){
+        if (product['status'] === 1) {
             const price_element = document.querySelector('h3')
 
-            if(price_element){
-                if(lastElement(product.price_history) > product.price) {
+            if (price_element) {
+                if (lastElement(product.price_history) > product.price) {
                     price_element.style.color = 'red';
-                }else if(lastElement(product.price_history) < product.price){
-                    price_element.style.color='#1bc000';
+                } else if (lastElement(product.price_history) < product.price) {
+                    price_element.style.color = '#1bc000';
                 }
             }
 
-            let id = 'plot_'+product_id;
+            let id = 'plot_' + product_id;
             let d = document.createElement('div');
             let style = "position: fixed; z-index:1000; width:450px; height:225px; left:10px; bottom:10px";
             d.setAttribute('id', id);
             d.setAttribute('style', style);
-            d.setAttribute('onclick', "deletePlotGraphProduct('"+id+"');");
+            d.setAttribute('onclick', "deletePlotGraphProduct('" + id + "');");
             document.body.appendChild(d);
             draw(JSON.stringify(product.price_history), id);
         }
 
     }
 
-    /**
-     * updateListProduct - We build a list for the products that have disappeared from the favorites
-     * @param  {Object} product.
-     */
-    htmlProductHistoryList(product) {
+    htmlProductHistory(product) {
         const html_product = `
 		  <div data-cy="l-card" class='css-1sw7q4x' data-history='${product.product_id}'>
 			<div class='css-f9q0mq'>
 			  <div type='grid' class='css-1wsfzf2'>
-				<a class='css-rc5s2u' href='${product.url}'>
+				<a class='css-rc5s2u' href='${window.location.protocol}//${product.url}'>
 				  <div type='grid' class='css-1ktmmfj'>
 					<div type='grid' class='css-1nt66ip'>
 					  <div class='css-gl6djm'>
@@ -734,7 +707,7 @@ class parser {
 				  </div>
 				</a>
 				<div type='grid' class='css-jytsq7'>
-				  <a class='css-rc5s2u' href='${product.url}'>
+				  <a class='css-rc5s2u' href='${window.location.protocol}//${product.url}'>
 					<div class='css-u2ayx9'>
 					  <h6 class='css-40l3sp er34gjf0'>${product.title}</h6>
 					</div>
@@ -744,7 +717,7 @@ class parser {
 					  ${product.seller_url && product.seller ? `<a href='${product.seller_url}'><strong style='font-weight: 900;'>${product.seller}</strong></a>` : ''}
 					</p>
 					<div color='text-global-secondary' class='css-1kfqt7f'></div>
-					<p data-testid='ad-price' class='css-1kyg3b9 er34gjf0'>${lastElement(product.price_history)>0 ? lastElement(product.price_history) : product.price}</p>
+					<p data-testid='ad-price' class='css-1kyg3b9 er34gjf0'>${lastElement(product.price_history) > 0 ? lastElement(product.price_history) : product.price}</p>
 				  </div>
 				  <span data-testid='adRemoveFromFavorites' class='css-1x8zoa0'>
 					<div class='css-1fxp90q'>
@@ -775,11 +748,12 @@ class parser {
      * galleryFavorites.
      */
 
-    galleryFavorites(e){
+    galleryFavorites(e) {
         const product = e.composedPath()[9];
-        if(!product) return false;
+        if (!product) return false;
         return this.parseProductOnFavoritesPage(product);
     }
+
     /**
      * parseProductOnFavoritesPage.
      */
@@ -812,9 +786,6 @@ class parser {
         return product;
     }
 
-    getProductIdInProductPage() {
-        return hashCode(window.location.host + window.location.pathname );
-    }
 
     /**
      * parseProduct
@@ -829,7 +800,7 @@ class parser {
         }
 
         const title = document.querySelector('h1')
-        if (title){
+        if (title) {
             product.title = title.textContent.trim();
         }
 
@@ -841,22 +812,223 @@ class parser {
             product.seller = "Продавець";
             product.seller_url = document.querySelector('a[data-testid="user-profile-link"]').getAttribute('href');
         }
-
         return product;
-    }
-
-    /**
-     * strInt.
-     * @param  {string} str.
-     */
-    strInt(str) {
-        return parseInt(str.replace(' ', ''));
     }
 }
 
+// For the old version of the site
+class OldParser extends Parser {
 
-const pars = new parser();
-const storage = new productStorage();
+    /**
+     * buildProductObjectByClick - Parser Product Click to Star START.
+     */
+    buildProductObjectByClick(e) {
+        if (this.listTypeList()) {
+            return this.page_type === 'favorites' ? this.listFavorites(e) : false;
+        } else {
+            const galleryResult = this.galleryFavorites(e);
+            return galleryResult === 'favorites' ? galleryResult : false;
+        }
+    }
+
+    /**
+     *parsePage - Pars all goods on page (for updating data) START
+     */
+    parsePage() {
+        if (this.page_type === 'product') {
+            return [this.parseProductOnProductPage()];
+        }
+        if (this.listTypeList()) {
+            return this.page_type === 'favorites' ? this.allProductListFavorites() : false;
+        } else {
+            return this.page_type === 'favorites' ? this.allProductGalleryFavorites() : false;
+        }
+    }
+
+    /**
+     * allProductGalleryFavorites.
+     */
+    allProductGalleryFavorites() {
+        let products = [];
+        let li = document.querySelectorAll('.gallerywide.clr.normal>li');
+        for (let i = 0; i < li.length; i++) {
+            products[i] = Object.assign({}, this.parseProductOnFavoritesPage(li[i]));//клонуєм обєк інакше буде по силці і всюди буде останнє значення
+        }
+        return products;
+    }
+
+    /**
+     * allProductListFavorites.
+     */
+    allProductListFavorites() {
+        let products = [];
+        let td = document.querySelectorAll('.offer.brtope9.pding10_0.promoted.observedad');
+        for (let i = 0; i < td.length; i++) {
+            products[i] = Object.assign({}, this.parseProductOnFavoritesPage(td[i]));//клонуєм обєк інакше буде по силці і всюди буде останнє значення
+        }
+        return products;
+    }
+
+
+    /**
+     * pageUpdate - update the page with data from the repository, the expired price, data for the graphs ....
+     * @param  {Object} products.
+     */
+    pageUpdate(products) {
+        if (this.listTypeList()) {
+            if (this.page_type === 'favorites') {
+                this.updateListFavoriteProducts(products);
+            }
+        } else {
+            switch (this.page_type) {
+                case 'favorites':
+                    this.updateGalleryFavoriteProducts(products);
+                    break;
+                case 'product':
+                    this.updateProductPage(products);
+                    break;
+                default:
+                    return false;
+            }
+        }
+
+    }
+
+    /**
+     * updateGalleryFavoriteProducts - update the gallery.
+     * @param  {Object} products.
+     */
+    updateGalleryFavoriteProducts(products) {
+        let html_product = '<h2 class="margintop20">Не активні оголошення</h2><hr><ul class="gallerywide clr normal">';
+        for (let key in products) {
+            const product = products[key];
+            if (product['status'] === 1) {
+                const priceElement = document.querySelector('li[data-my-id="' + key + '"] div[class="price"]');
+                if (lastElement(product.price_history) > product.price) {
+                    if (priceElement) {
+                        priceElement.style.color = 'red';
+                    }
+                } else if (lastElement(product.price_history) < product.price) {
+                    if (priceElement) {
+                        priceElement.style.color = '#1bc000';
+                    }
+                }
+                if (Object.keys(product.price_history).length > 1) {
+
+                    document.querySelector('[data-my-id="' + key + '"]').setAttribute("data-history-price", JSON.stringify(product.price_history));
+                }
+            } else {
+                html_product += this.htmlProductHistory(product);
+            }
+        }
+        html_product += '</ul>';
+        document.querySelectorAll('section[id="body-container"]>div>div>div[class="margintop10"]')[0].insertAdjacentHTML('afterend', html_product);
+    }
+
+    /**
+     * updateListFavoriteProducts - update product list.
+     * @param  {Object} products.
+     */
+    updateListFavoriteProducts(products) {
+        let html_product = '<h2 class="margintop20">Не активні оголошення</h2><hr><ul class="gallerywide clr normal">';
+        for (let key in products) {
+            let product = products[key];
+            if (product.status === 1) {
+                const priceElement = document.querySelector('td[data-my-id="' + key + '"]');
+                if (lastElement(product.price_history) > product.price) {
+                    if (priceElement) {
+                        priceElement.style.color = 'red';
+                    }
+                } else if (lastElement(product.price_history) < product.price) {
+                    if (priceElement) {
+                        priceElement.style.color = '#1bc000';
+                    }
+                }
+                if (Object.keys(product.price_history).length > 1) {
+                    priceElement.setAttribute("data-history-price", JSON.stringify(product.price_history));
+                }
+            } else {
+                html_product += this.htmlProductHistory(product);
+            }
+        }
+        html_product += '</ul>';
+        document.querySelectorAll('section[id="body-container"]>div>div>div[class="margintop10"]')[0].insertAdjacentHTML('afterend', html_product);
+    }
+
+    htmlProductHistory(product) {
+        const html_product = `
+		  <li class="tleft rel fleft observedad {adId: 630136041} " data-history='${product.product_id}'>
+           <div class="mheight tcenter">
+              <a class="thumb tdnone scale1 rel offerLink " href="${window.location.protocol}//${product.url}" title="${product.title}">
+              <img class="fleft" style='-webkit-filter: grayscale(100%); filter: grayscale(100%);' src="${product.img}" alt="${product.title}">
+              </a>
+           </div>
+           <div class="inner">
+              <h4 class="normal">
+                 <a class="link offerLink" title="${product.title}" href="${window.location.protocol}//${product.url}">
+                 <strong>${product.title}</strong>
+                 </a>
+              </h4>
+              <p class="lheight12 margintop2">
+                 
+              </p>
+           </div>
+           <ul class="date-location">
+              <li>${product.seller_url && product.seller ? `<a href='${product.seller_url}'><strong style='font-weight: 900;'>${product.seller}</strong></a>` : ''}</li>
+           </ul>
+           <div class="price">
+              ${lastElement(product.price_history) > 0 ? lastElement(product.price_history) : product.price}                    
+           </div>
+           <div class="favtab br3 abs zi4 observelinkgallery">
+              <div class='delete-from-history' style='color:green; cursor: pointer'>
+                <p data-deleteId='${product.product_id}'>Видалити</p>
+              </div>
+           </div>
+        </li>`;
+
+        return html_product;
+
+    }
+
+    galleryFavorites(e) {
+        const product = e.composedPath()[3];
+        if (!product) return false;
+        return this.parseProductOnFavoritesPage(product);
+    }
+
+    /**
+     * listFavorites.
+     */
+    listFavorites(e) {
+        let product = e.composedPath()[8];
+        if (!product) return false;
+        return this.parseProductOnFavoritesPage(product);
+    }
+
+    parseProductOnFavoritesPage(product_noda) {
+        const product = this.newProduct();
+        const a = product_noda.querySelectorAll('a');
+        if (a.length > 0) {
+            product.title = a[0].getAttribute('title');
+            product.url = a[0].getAttribute('href').replace(/\?.*/, '').replace('https://', '') || '';
+            const productId = hashCode(product.url);
+            product.product_id = productId;
+            product_noda.dataset.myId = JSON.stringify(productId);
+        }
+        if (product_noda.querySelector('img')) {
+            product.img = product_noda.querySelector('img').getAttribute('src');
+        }
+        if (product_noda.querySelector('.price')) {
+            product.price = this.strInt(product_noda.querySelector('.price').innerHTML.replace(/([^\d]*)/, ''));
+        }
+        return product;
+    }
+}
+let pars = new Parser();
+if (document.getElementById("body-container")){
+    pars = new OldParser();
+}
+const storage = new ProductStorage();
 const plot = new Draw();
 
 /**
@@ -900,11 +1072,10 @@ function draw(history_price, id) {
 /**
  * addProduct.
  */
-
-
-function addProduct(e){
-	storage.addProduct(pars.buildProductObjectByClick(e));
+function addProduct(e) {
+    storage.addProduct(pars.buildProductObjectByClick(e));
 }
+
 /**
  * deleteProduct.
  */
@@ -913,7 +1084,7 @@ function deleteProduct(e) {
 }
 
 /**
- * deleteProductHistory.
+ * deleteProductFromHistory.
  */
 function deleteProductFromHistory(e) {
     let product_id = e.composedPath()[0].getAttribute('data-deleteId');
@@ -967,10 +1138,10 @@ function deletePlotGraphProduct(e) {
     }
 }
 
-
 function setEventListener() {
     const stars = document.querySelectorAll('span[data-icon="star"]');
-    for(let i=0; i<stars.length; i++){
+
+    for (let i = 0; i < stars.length; i++) {
         stars[i].addEventListener("click", addProduct);
     }
     const stars_filled = document.querySelectorAll('span[data-testid="adRemoveFromFavorites"], div[class="css-1lx5q7o"]');
@@ -992,11 +1163,6 @@ function setEventListener() {
         data_history_price_product[i].addEventListener("click", deletePlotGraphProduct);
     }
 }
-
-/**
- * parsePage.
- */
-
 
 setTimeout(() => {
     var target = document.querySelector('#listContainer');
