@@ -1,5 +1,7 @@
 "use strict";
 
+var pars
+
 /**
  * lastElement.
  * @param  {Object} obj - Object.
@@ -601,7 +603,7 @@ class Parser {
      */
     allProductGalleryFavorites() {
         let products = [];
-        let list = document.querySelectorAll('div[view="grid"]>div');
+        let list = document.querySelectorAll('div[view="grid"]:not(.history)>div');
         for (let i = 0; i < list.length; i++) {
             products[i] = Object.assign({}, this.parseProductOnFavoritesPage(list[i]));//клонуєм обєк інакше буде по силці і всюди буде останнє значення
         }
@@ -630,7 +632,10 @@ class Parser {
      * @param  {Object} products.
      */
     updateFavoriteProducts(products) {
-        let html_product = '<h2>Не активні оголошення</h2><hr><div view="grid" class="css-1oiyj28">';
+        if (document.getElementById('old_products')) {
+            return;
+        }
+        let html_product = '<h2 id="old_products">Не активні оголошення</h2><hr><div view="grid" class="css-1oiyj28 history">';
         for (let key in products) {
             const product = products[key];
             if (product['status'] === 1) {
@@ -665,7 +670,7 @@ class Parser {
 
         const product = products[product_id];
         if (product['status'] === 1) {
-            const price_element = document.querySelector('h3')
+            const price_element = document.querySelector('div[data-testid="ad-price-container"] h3')
 
             if (price_element) {
                 if (lastElement(product.price_history) > product.price) {
@@ -675,14 +680,16 @@ class Parser {
                 }
             }
 
-            let id = 'plot_' + product_id;
-            let d = document.createElement('div');
-            let style = "position: fixed; z-index:1000; width:450px; height:225px; left:10px; bottom:10px";
-            d.setAttribute('id', id);
-            d.setAttribute('style', style);
-            d.setAttribute('onclick', "deletePlotGraphProduct('" + id + "');");
-            document.body.appendChild(d);
-            draw(JSON.stringify(product.price_history), id);
+            /*const id = 'plot_' + product_id;
+            if (!document.getElementById(id)){
+                let d = document.createElement('div');
+                let style = "position: fixed; z-index:1000; width:450px; height:225px; left:10px; bottom:10px";
+                d.setAttribute('id', id);
+                d.setAttribute('style', style);
+                d.setAttribute('onclick', "deletePlotGraphProduct('" + id + "');");
+                document.body.appendChild(d);
+                draw(JSON.stringify(product.price_history), id);
+            }*/
         }
 
     }
@@ -775,7 +782,9 @@ class Parser {
 
         const img = product_noda.querySelector('img');
         if (img) {
-            product.img = img.getAttribute('src') || '';
+            if (product.img != "/app/static/media/no_thumbnail.15f456ec5.svg") {
+                product.img = img.getAttribute('src') || '';
+            }
         }
 
         const price = product_noda.querySelector('p[data-testid="ad-price"]');
@@ -805,7 +814,7 @@ class Parser {
         }
 
         if (document.querySelector('h3')) {
-            product.price = this.strInt(document.querySelector('h3').textContent.replace(/([^\d]*)/, ''));
+            product.price = this.strInt(document.querySelector('div[data-testid="ad-price-container"] h3').textContent.replace(/([^\d]*)/, ''));
         }
 
         if (document.querySelector('a[data-testid="user-profile-link"]')) {
@@ -1024,12 +1033,9 @@ class OldParser extends Parser {
         return product;
     }
 }
-let pars = new Parser();
-if (document.getElementById("body-container")){
-    pars = new OldParser();
-}
-const storage = new ProductStorage();
+
 const plot = new Draw();
+const storage = new ProductStorage();
 
 /**
  * draw.
@@ -1088,6 +1094,7 @@ function deleteProduct(e) {
  */
 function deleteProductFromHistory(e) {
     let product_id = e.composedPath()[0].getAttribute('data-deleteId');
+    console.dir(product_id)
     storage.deleteProductById(product_id);
     pars.deleteProductFromHistoryDom(product_id)
 }
@@ -1139,53 +1146,36 @@ function deletePlotGraphProduct(e) {
 }
 
 function setEventListener() {
-    const stars = document.querySelectorAll('span[data-icon="star"]');
+    let stars = document.querySelectorAll('span[data-icon="star"]');
 
     for (let i = 0; i < stars.length; i++) {
         stars[i].addEventListener("click", addProduct);
     }
-    const stars_filled = document.querySelectorAll('span[data-testid="adRemoveFromFavorites"], div[class="css-1lx5q7o"]');
+    let stars_filled = document.querySelectorAll('span[data-testid="adRemoveFromFavorites"], div[class="css-1lx5q7o"]');
     for (let i = 0; i < stars_filled.length; i++) {
         stars_filled[i].addEventListener("click", deleteProduct);
     }
 
-    const history = document.querySelectorAll('div[class="delete-from-history"]');
+    let history = document.querySelectorAll('div[class="delete-from-history"]');
     for (let i = 0; i < history.length; i++) {
         history[i].addEventListener("click", deleteProductFromHistory);
     }
-    const data_history_price = document.querySelectorAll('[data-my-id]');
+    let data_history_price = document.querySelectorAll('[data-my-id]');
     for (let i = 0; i < data_history_price.length; i++) {
         data_history_price[i].addEventListener("mouseenter", plotGraph);
         data_history_price[i].addEventListener("mouseleave", deletePlotGraph);
     }
-    const data_history_price_product = document.querySelectorAll('[data_name_img]');
+    let data_history_price_product = document.querySelectorAll('[data_name_img]');
     for (let i = 0; i < data_history_price_product.length; i++) {
         data_history_price_product[i].addEventListener("click", deletePlotGraphProduct);
     }
 }
 
-setTimeout(() => {
-    var target = document.querySelector('#listContainer');
-    if (target) {
-        var observer = new MutationObserver(function (mutations) {
-            var reEvent = false;
-            mutations.forEach(function (mutation) {
-                if (mutation.type === 'childList') {
-                    reEvent = true;
-                }
-            });
-            if (reEvent) setEventListener();
-        });
-        var config = {attributes: true, childList: true, characterData: true};
-        observer.observe(target, config);
-    }
-
-    parsePage();
-    setEventListener();
-
-}, 2000);
-
 function parsePage() {
+     pars = new Parser();
+    if (document.getElementById("body-container")) {
+        pars = new OldParser();
+    }
     let products = pars.parsePage();
     if (products) {
         storage.updateProduct(products, pars.page_type);
@@ -1193,25 +1183,21 @@ function parsePage() {
     }
 }
 
-/**
- * mutation tracking changes in DOM (change list to gallery or pagination or filters) .
- */
-/*
-var target = document.querySelector('#listContainer');
-if(target){
-	var observer = new MutationObserver(function(mutations) {
-	var reEvent = false;
-	  mutations.forEach(function(mutation) {
-		if(mutation.type=='childList'){
-			reEvent = true;
-		}
-	  });
-		if(reEvent) starEventListener();
-	});
-	var config = { attributes: true, childList: true, characterData: true };
-	observer.observe(target,  config);
-}*/
-/*
-window.onload = starEventListener;
-parsePage();
-*/
+function start() {
+    parsePage();
+    setEventListener();
+}
+
+const wait = setTimeout(() => {
+        start()
+    },
+    2000);
+
+var baseUrle = window.location.pathname
+const interval = setInterval(() => {
+        if (baseUrle != window.location.pathname) {
+            baseUrle = window.location.pathname
+            start()
+        }
+    },
+    2500);
